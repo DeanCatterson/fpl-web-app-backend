@@ -1,0 +1,16 @@
+server:
+  port : 8080
+
+logging:
+  level:
+    org.springframework: ERROR
+    com.deancatterson.app: DEBUG
+
+spring:
+  profiles:
+    active: dev
+  main:
+    banner-mode: off
+
+fpl-api:
+  baseUrl: https://fantasy.premierleague.com/api/
