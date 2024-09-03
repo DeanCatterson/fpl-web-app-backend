@@ -42,6 +42,8 @@ public class TeamService {
             JSONObject responseJSON = new JSONObject(responseBody);
 
             team = extractDetailsFromJsonResponse(responseJSON);
+
+            System.out.println("XXXXX team name: " + team.getTeamName());
         }
 
         return team;
