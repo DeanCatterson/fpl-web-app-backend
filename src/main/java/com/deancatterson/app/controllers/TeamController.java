@@ -4,7 +4,10 @@ import com.deancatterson.app.Team;
 import com.deancatterson.app.exception.NoTeamFoundException;
 import com.deancatterson.app.exception.NullTeamIdException;
 import com.deancatterson.app.services.TeamService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,11 +19,18 @@ public class TeamController {
     private TeamService teamService = new TeamService();
 
     @GetMapping("/team/{teamId}")
-    public Team getTeamById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
-        if (teamId == null) {
-            throw new NullTeamIdException("Team ID is null");
+    public ResponseEntity<Team> getTeamById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
+        Team team = new Team();
+
+        team = teamService.getTeamById(teamId);
+
+        System.out.println("XXXXX team.getId(): " + team.getId());
+
+        if (team.getId() == -1) {
+//            throw new NullTeamIdException("Team ID is null");
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        return teamService.getTeamById(teamId);
+        return new ResponseEntity<>(team, HttpStatus.OK);
     }
 }

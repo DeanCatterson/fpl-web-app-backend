@@ -7,10 +7,13 @@ import org.json.JSONObject;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.util.Objects;
 
 @Service
 public class TeamService {
-    // TODO: move url's to config file
+    // TODO: move url's to config file & get dependency injection working properly
 //    @Value("${fpl-api.baseUrl}")
     private String fplBaseUrl = "https://fantasy.premierleague.com/api/";
 
@@ -25,16 +28,22 @@ public class TeamService {
     public Team getTeamById(Integer teamId) throws NoTeamFoundException {
         String uri = fplBaseUrl + fplTeamUrl + teamId + "/";
 
+        String responseBody = null;
 
-        WebClient.ResponseSpec responseSpec = client.get()
-                .uri(uri)
-                .retrieve();
+        Team team = new Team();
 
-        String responseBody = responseSpec
-                .bodyToMono(String.class)
-                .block();
+        try {
+            responseBody = client.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-        Team team;
+        } catch (Exception e) {
+            // error retrieving team
+            team.setId(-1);
+            return team;
+        }
 
         if (responseBody == null) {
             throw new NoTeamFoundException("No team was found.");
@@ -57,6 +66,8 @@ public class TeamService {
         String managerFirstName = jsonObject.getString("player_first_name");
         String managerLastName = jsonObject.getString("player_last_name");
         String teamName = jsonObject.getString("name");
+
+        // TODO: below fields will cause an error for newly created teams, which have points & rank set to null.
         Integer overallPoints = jsonObject.getInt("summary_overall_points");
         Integer overallRank = jsonObject.getInt("summary_overall_rank");
 
