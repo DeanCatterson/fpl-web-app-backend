@@ -1,10 +1,9 @@
 package com.deancatterson.app.controllers;
 
-import com.deancatterson.app.Team;
+import com.deancatterson.app.entity.Team;
 import com.deancatterson.app.exception.NoTeamFoundException;
 import com.deancatterson.app.exception.NullTeamIdException;
 import com.deancatterson.app.services.TeamService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TeamController {
 
-    private TeamService teamService = new TeamService();
+    @Autowired
+    private TeamService teamService;
+//    private TeamService teamService = new TeamService();
 
     @GetMapping("/team/{teamId}")
     public ResponseEntity<Team> getTeamById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {

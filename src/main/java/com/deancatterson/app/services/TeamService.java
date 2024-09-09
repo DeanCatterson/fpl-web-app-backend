@@ -1,34 +1,27 @@
 package com.deancatterson.app.services;
 
-import com.deancatterson.app.Team;
+import com.deancatterson.app.entity.Team;
 import com.deancatterson.app.exception.NoTeamFoundException;
-import com.deancatterson.app.fplconfig.FPLAPIConfig;
 import org.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.util.Objects;
 
 @Service
 public class TeamService {
-    // TODO: move url's to config file & get dependency injection working properly
-//    @Value("${fpl-api.baseUrl}")
-    private String fplBaseUrl = "https://fantasy.premierleague.com/api/";
+
+    @Value("${fpl-api.baseUrl}")
+    private String fplBaseUrl;
 
     private String fplTeamUrl = "entry/";
 
     WebClient client = WebClient.create();
 
-//    @Autowired
-    private FPLAPIConfig fplapiConfig;
-
-
     public Team getTeamById(Integer teamId) throws NoTeamFoundException {
         String uri = fplBaseUrl + fplTeamUrl + teamId + "/";
 
-        String responseBody = null;
+        String responseBody;
 
         Team team = new Team();
 
@@ -40,7 +33,7 @@ public class TeamService {
                     .block();
 
         } catch (Exception e) {
-            // error retrieving team
+            // error retrieving team. Set teamId to -1
             team.setId(-1);
             return team;
         }

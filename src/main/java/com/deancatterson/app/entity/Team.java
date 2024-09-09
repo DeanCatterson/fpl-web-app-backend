@@ -1,4 +1,4 @@
-package com.deancatterson.app;
+package com.deancatterson.app.entity;
 
 public class Team {
     Integer id;
