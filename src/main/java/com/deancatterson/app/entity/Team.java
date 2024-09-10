@@ -5,7 +5,7 @@ public class Team {
     String managerName;
     String teamName;
     Integer points;
-    Integer overallRank;
+    Integer rank;
 
     public Integer getId() {
         return id;
@@ -39,12 +39,12 @@ public class Team {
         this.points = points;
     }
 
-    public Integer getOverallRank() {
-        return overallRank;
+    public Integer getRank() {
+        return rank;
     }
 
-    public void setOverallRank(Integer overallRank) {
-        this.overallRank = overallRank;
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 
 }

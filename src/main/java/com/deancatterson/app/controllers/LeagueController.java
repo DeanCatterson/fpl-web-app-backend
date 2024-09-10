@@ -14,7 +14,6 @@ import java.util.List;
 // This Controller receives requests from the FPL-Web-App UI
 @RestController
 public class LeagueController {
-    // TODO: view mini league info feature
 
     @Autowired
     private LeagueService leagueService;
@@ -25,9 +24,7 @@ public class LeagueController {
             throw new NullLeagueIdException("League ID is null");
         }
 
-        List<Team> teams = new ArrayList<>();
-
-        teams = leagueService.getTeamsInLeagueByLeagueId(leagueId);
+        List<Team> teams = leagueService.getTeamsInLeagueByLeagueId(leagueId);
 
         return teams;
     }

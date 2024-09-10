@@ -14,9 +14,10 @@ public class TeamService {
     @Value("${fpl-api.baseUrl}")
     private String fplBaseUrl;
 
+    WebClient client = WebClient.create();
+
     private String fplTeamUrl = "entry/";
 
-    WebClient client = WebClient.create();
 
     public Team getTeamById(Integer teamId) throws NoTeamFoundException {
         String uri = fplBaseUrl + fplTeamUrl + teamId + "/";
@@ -68,7 +69,7 @@ public class TeamService {
         team.setManagerName(managerFirstName + " " + managerLastName);
         team.setTeamName(teamName);
         team.setPoints(overallPoints);
-        team.setOverallRank(overallRank);
+        team.setRank(overallRank);
 
         return team;
     }

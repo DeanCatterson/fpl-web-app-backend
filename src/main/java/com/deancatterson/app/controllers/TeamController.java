@@ -21,9 +21,7 @@ public class TeamController {
 
     @GetMapping("/team/{teamId}")
     public ResponseEntity<Team> getTeamById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
-        Team team = new Team();
-
-        team = teamService.getTeamById(teamId);
+        Team team = teamService.getTeamById(teamId);
 
         System.out.println("XXXXX team.getId(): " + team.getId());
 
