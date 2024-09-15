@@ -1,7 +1,9 @@
 package com.deancatterson.app.services;
 
 import com.deancatterson.app.entity.Team;
+import com.deancatterson.app.entity.TeamHistory;
 import com.deancatterson.app.exception.NoTeamFoundException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ public class TeamService {
     WebClient client = WebClient.create();
 
     private String fplTeamUrl = "entry/";
+    private String fplTeamHistoryUrl = "/history/";
 
 
     public Team getTeamById(Integer teamId) throws NoTeamFoundException {
@@ -44,7 +47,7 @@ public class TeamService {
         } else {
             JSONObject responseJSON = new JSONObject(responseBody);
 
-            team = extractDetailsFromJsonResponse(responseJSON);
+            team = extractTeamDetailsFromJsonResponse(responseJSON);
 
             System.out.println("XXXXX team name: " + team.getTeamName());
         }
@@ -52,7 +55,124 @@ public class TeamService {
         return team;
     }
 
-    protected Team extractDetailsFromJsonResponse(JSONObject jsonObject) {
+    public TeamHistory getTeamHistoryById(Integer teamId) throws NoTeamFoundException {
+        String uri = fplBaseUrl + fplTeamUrl + teamId + fplTeamHistoryUrl;
+
+        String responseBody;
+
+        TeamHistory teamHistory = new TeamHistory();
+
+        try {
+            responseBody = client.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+        } catch (Exception e) {
+            // error retrieving team. Set teamId to -1
+//            teamHistory.setId(-1);
+            return teamHistory;
+        }
+
+        if (responseBody == null) {
+            throw new NoTeamFoundException("No team was found.");
+        } else {
+            JSONObject responseJSON = new JSONObject(responseBody);
+
+            teamHistory = extractTeamHistoryDetailsFromJsonResponse(responseJSON);
+        }
+
+        return teamHistory;
+    }
+
+    protected TeamHistory extractTeamHistoryDetailsFromJsonResponse(JSONObject jsonObject) {
+        TeamHistory teamHistory = new TeamHistory();
+
+        JSONArray currentSeasonArray = jsonObject.getJSONArray("current");
+
+        Integer currentSeasonHighestOverallRank = 999999999;
+        Integer currentSeasonHighestWeeklyRank = 999999999;
+        Integer currentSeasonHighestWeeklyPoints = 0;
+
+        JSONObject gameweek;
+
+        for (int i = 0; i < currentSeasonArray.length(); i++) {
+            gameweek = currentSeasonArray.getJSONObject(i);
+
+            if (gameweek.getInt("overall_rank") < currentSeasonHighestOverallRank) {
+                currentSeasonHighestOverallRank = gameweek.getInt("overall_rank");
+            }
+
+            if (gameweek.getInt("rank") < currentSeasonHighestWeeklyRank) {
+                currentSeasonHighestWeeklyRank = gameweek.getInt("rank");
+            }
+
+            if (gameweek.getInt("points") > currentSeasonHighestWeeklyPoints) {
+                currentSeasonHighestWeeklyPoints = gameweek.getInt("points");
+            }
+        }
+
+
+        JSONArray pastSeasonsArray = jsonObject.getJSONArray("past");
+        Integer numberOfActiveSeasons = pastSeasonsArray.length();
+
+
+        Integer highestYearlyFinishRank = 999999999;
+        String highestYearlyFinishRankSeason = "1970/71";
+
+        Integer highestYearlyFinishPoints = 0;
+        String highestYearlyFinishPointsSeason = "1970/71";
+
+        Integer averageYearlyRank = 0;
+        Integer averageYearlyPoints = 0;
+        
+        long rankCounter = 0;
+        long pointsCounter = 0;
+        
+        JSONObject season;
+
+        System.out.println("YYYYY pastSeasonsArray.length(): " + pastSeasonsArray.length());
+        for (int i = 0; i < pastSeasonsArray.length(); i++) {
+            season = pastSeasonsArray.getJSONObject(i);
+            System.out.println("YYYYY getting season data for season: " + season.getString("season_name"));
+            System.out.println("YYYYY season data: " + season);
+
+            if (season.getInt("rank") < highestYearlyFinishRank) {
+                highestYearlyFinishRank = season.getInt("rank");
+                highestYearlyFinishRankSeason = season.getString("season_name");
+            }
+            
+            if (season.getInt("total_points") > highestYearlyFinishPoints) {
+                highestYearlyFinishPoints = season.getInt("total_points");
+                highestYearlyFinishPointsSeason = season.getString("season_name");
+            }
+            
+            rankCounter += season.getInt("rank");
+            pointsCounter += season.getInt("total_points");
+        }
+        
+        teamHistory.setCurrentSeasonHighestOverallRank(currentSeasonHighestOverallRank);
+
+        teamHistory.setCurrentSeasonHighestWeeklyRank(currentSeasonHighestWeeklyRank);
+
+        teamHistory.setCurrentSeasonHighestWeeklyPoints(currentSeasonHighestWeeklyPoints);
+        teamHistory.setHighestYearlyFinishRank(highestYearlyFinishRank);
+
+        teamHistory.setHighestYearlyFinishRankSeason(highestYearlyFinishRankSeason);
+        teamHistory.setHighestYearlyFinishPoints(highestYearlyFinishPoints);
+        teamHistory.setHighestYearlyFinishPointsSeason(highestYearlyFinishPointsSeason);
+
+        teamHistory.setNumberOfActiveSeasons(numberOfActiveSeasons);
+
+        teamHistory.setAverageYearlyRank((int) (rankCounter / numberOfActiveSeasons));
+        teamHistory.setAverageYearlyPoints((int) (pointsCounter / numberOfActiveSeasons));
+
+        return teamHistory;
+    }
+
+
+        protected Team extractTeamDetailsFromJsonResponse(JSONObject jsonObject) {
         Team team = new Team();
 
         // Extract require fields from the massive json object returned from the fpl api

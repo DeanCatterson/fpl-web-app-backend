@@ -1,6 +1,7 @@
 package com.deancatterson.app.controllers;
 
 import com.deancatterson.app.entity.Team;
+import com.deancatterson.app.entity.TeamHistory;
 import com.deancatterson.app.exception.NoTeamFoundException;
 import com.deancatterson.app.exception.NullTeamIdException;
 import com.deancatterson.app.services.TeamService;
@@ -17,7 +18,6 @@ public class TeamController {
 
     @Autowired
     private TeamService teamService;
-//    private TeamService teamService = new TeamService();
 
     @GetMapping("/team/{teamId}")
     public ResponseEntity<Team> getTeamById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
@@ -26,10 +26,24 @@ public class TeamController {
         System.out.println("XXXXX team.getId(): " + team.getId());
 
         if (team.getId() == -1) {
-//            throw new NullTeamIdException("Team ID is null");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(team, HttpStatus.OK);
     }
-}
+
+    @GetMapping("/team/history/{teamId}")
+    public ResponseEntity<TeamHistory> getTeamHistoryById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
+        TeamHistory teamHistory = teamService.getTeamHistoryById(teamId);
+
+        System.out.println("XXXXX in controller getting history for team: " + teamId);
+
+//        if (teamHistory.getId() == -1) {
+//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+//        }
+
+        return new ResponseEntity<>(teamHistory, HttpStatus.OK);
+    }
+
+
+    }
