@@ -14,7 +14,7 @@ public class TeamHistory {
     Integer averageYearlyRank;
     Integer averageYearlyPoints;
 
-    Integer numberOfActiveSeasons;
+    Integer numberOfCompletedSeasons;
 
 
     public Integer getCurrentSeasonHighestOverallRank() {
@@ -73,12 +73,12 @@ public class TeamHistory {
         this.highestYearlyFinishRankSeason = highestYearlyFinishRankSeason;
     }
 
-    public Integer getNumberOfActiveSeasons() {
-        return numberOfActiveSeasons;
+    public Integer getnumberOfCompletedSeasons() {
+        return numberOfCompletedSeasons;
     }
 
-    public void setNumberOfActiveSeasons(Integer numberOfActiveSeasons) {
-        this.numberOfActiveSeasons = numberOfActiveSeasons;
+    public void setnumberOfCompletedSeasons(Integer numberOfCompletedSeasons) {
+        this.numberOfCompletedSeasons = numberOfCompletedSeasons;
     }
 
     public Integer getAverageYearlyRank() {

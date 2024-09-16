@@ -48,8 +48,6 @@ public class TeamService {
             JSONObject responseJSON = new JSONObject(responseBody);
 
             team = extractTeamDetailsFromJsonResponse(responseJSON);
-
-            System.out.println("XXXXX team name: " + team.getTeamName());
         }
 
         return team;
@@ -115,13 +113,13 @@ public class TeamService {
 
 
         JSONArray pastSeasonsArray = jsonObject.getJSONArray("past");
-        Integer numberOfActiveSeasons = pastSeasonsArray.length();
+        Integer numberOfCompletedSeasons = pastSeasonsArray.length();
 
 
         Integer highestYearlyFinishRank = 999999999;
         String highestYearlyFinishRankSeason = "1970/71";
 
-        Integer highestYearlyFinishPoints = 0;
+        Integer highestYearlyFinishPoints = -1;
         String highestYearlyFinishPointsSeason = "1970/71";
 
         Integer averageYearlyRank = 0;
@@ -132,11 +130,8 @@ public class TeamService {
         
         JSONObject season;
 
-        System.out.println("YYYYY pastSeasonsArray.length(): " + pastSeasonsArray.length());
         for (int i = 0; i < pastSeasonsArray.length(); i++) {
             season = pastSeasonsArray.getJSONObject(i);
-            System.out.println("YYYYY getting season data for season: " + season.getString("season_name"));
-            System.out.println("YYYYY season data: " + season);
 
             if (season.getInt("rank") < highestYearlyFinishRank) {
                 highestYearlyFinishRank = season.getInt("rank");
@@ -163,10 +158,15 @@ public class TeamService {
         teamHistory.setHighestYearlyFinishPoints(highestYearlyFinishPoints);
         teamHistory.setHighestYearlyFinishPointsSeason(highestYearlyFinishPointsSeason);
 
-        teamHistory.setNumberOfActiveSeasons(numberOfActiveSeasons);
+        teamHistory.setnumberOfCompletedSeasons(numberOfCompletedSeasons);
 
-        teamHistory.setAverageYearlyRank((int) (rankCounter / numberOfActiveSeasons));
-        teamHistory.setAverageYearlyPoints((int) (pointsCounter / numberOfActiveSeasons));
+        if (numberOfCompletedSeasons > 0) {
+            teamHistory.setAverageYearlyRank((int) (rankCounter / numberOfCompletedSeasons));
+            teamHistory.setAverageYearlyPoints((int) (pointsCounter / numberOfCompletedSeasons));
+        } else {
+            teamHistory.setAverageYearlyRank(-1);
+            teamHistory.setAverageYearlyPoints(-1);
+        }
 
         return teamHistory;
     }

@@ -23,8 +23,6 @@ public class TeamController {
     public ResponseEntity<Team> getTeamById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
         Team team = teamService.getTeamById(teamId);
 
-        System.out.println("XXXXX team.getId(): " + team.getId());
-
         if (team.getId() == -1) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -35,12 +33,6 @@ public class TeamController {
     @GetMapping("/team/history/{teamId}")
     public ResponseEntity<TeamHistory> getTeamHistoryById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
         TeamHistory teamHistory = teamService.getTeamHistoryById(teamId);
-
-        System.out.println("XXXXX in controller getting history for team: " + teamId);
-
-//        if (teamHistory.getId() == -1) {
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
 
         return new ResponseEntity<>(teamHistory, HttpStatus.OK);
     }
