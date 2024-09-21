@@ -30,7 +30,7 @@ public class TeamController {
         return new ResponseEntity<>(team, HttpStatus.OK);
     }
 
-    // TODO can refactor to return a DetailedTeamHistory object here, created by pulling data from both the TeamDetails & TeamHistory endpoints
+    // TODO can refactor to return a DetailedTeamInfo object here, created by pulling data from both the TeamDetails & TeamHistory endpoints
 
     @GetMapping("/team/history/{teamId}")
     public ResponseEntity<TeamHistory> getTeamHistoryById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
