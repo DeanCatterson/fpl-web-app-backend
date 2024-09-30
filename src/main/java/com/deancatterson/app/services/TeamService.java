@@ -1,5 +1,6 @@
 package com.deancatterson.app.services;
 
+import com.deancatterson.app.entity.DetailedTeamInfo;
 import com.deancatterson.app.entity.Team;
 import com.deancatterson.app.entity.TeamHistory;
 import com.deancatterson.app.exception.NoTeamFoundException;
@@ -20,6 +21,31 @@ public class TeamService {
 
     private String fplTeamUrl = "entry/";
     private String fplTeamHistoryUrl = "/history/";
+
+    public DetailedTeamInfo getDetailedTeamInfo(Integer teamId) throws NoTeamFoundException {
+        System.out.println("YYYYY in TeamService. teamId: " + teamId);
+
+        DetailedTeamInfo detailedTeamInfo = new DetailedTeamInfo();
+        Team team = new Team();
+        TeamHistory history = new TeamHistory();
+
+        try {
+            team = getTeamById(teamId);
+            history = getTeamHistoryById(teamId);
+        } catch (Exception e) {
+            System.out.println("YYYYY Exception: " + e);
+            return detailedTeamInfo;
+        }
+
+        detailedTeamInfo.setTeam(team);
+        detailedTeamInfo.setHistory(history);
+
+        System.out.println("YYYYY team: " + team);
+        System.out.println("YYYYY history: " + history);
+        System.out.println("YYYYY detailedTeamInfo: " + detailedTeamInfo);
+
+        return detailedTeamInfo;
+    }
 
 
     public Team getTeamById(Integer teamId) throws NoTeamFoundException {
@@ -85,6 +111,7 @@ public class TeamService {
     }
 
     protected TeamHistory extractTeamHistoryDetailsFromJsonResponse(JSONObject jsonObject) {
+        System.out.println("ZZZZZ jsonObject: " + jsonObject);
         TeamHistory teamHistory = new TeamHistory();
 
         JSONArray currentSeasonArray = jsonObject.getJSONArray("current");
@@ -146,8 +173,19 @@ public class TeamService {
             rankCounter += season.getInt("rank");
             pointsCounter += season.getInt("total_points");
         }
-        
-        teamHistory.setCurrentSeasonHighestOverallRank(currentSeasonHighestOverallRank);
+
+        JSONArray chipsArray = jsonObject.getJSONArray("chips");
+        String[] chips = new String[chipsArray.length()];
+        JSONObject chip;
+
+        for (int i = 0; i < chipsArray.length(); i++) {
+            chip = chipsArray.getJSONObject(i);
+
+            chips[i] = chip.getString("name");
+        }
+
+
+            teamHistory.setCurrentSeasonHighestOverallRank(currentSeasonHighestOverallRank);
 
         teamHistory.setCurrentSeasonHighestWeeklyRank(currentSeasonHighestWeeklyRank);
 
@@ -160,6 +198,8 @@ public class TeamService {
 
         teamHistory.setnumberOfCompletedSeasons(numberOfCompletedSeasons);
 
+        teamHistory.setChips(chips);
+
         if (numberOfCompletedSeasons > 0) {
             teamHistory.setAverageYearlyRank((int) (rankCounter / numberOfCompletedSeasons));
             teamHistory.setAverageYearlyPoints((int) (pointsCounter / numberOfCompletedSeasons));
@@ -167,12 +207,11 @@ public class TeamService {
             teamHistory.setAverageYearlyRank(-1);
             teamHistory.setAverageYearlyPoints(-1);
         }
-
         return teamHistory;
     }
 
 
-        protected Team extractTeamDetailsFromJsonResponse(JSONObject jsonObject) {
+    protected Team extractTeamDetailsFromJsonResponse(JSONObject jsonObject) {
         Team team = new Team();
 
         // Extract require fields from the massive json object returned from the fpl api

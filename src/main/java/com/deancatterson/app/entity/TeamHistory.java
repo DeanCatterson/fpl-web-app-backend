@@ -1,5 +1,8 @@
 package com.deancatterson.app.entity;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class TeamHistory {
     Integer currentSeasonHighestOverallRank;
     Integer currentSeasonHighestWeeklyRank;
@@ -15,6 +18,8 @@ public class TeamHistory {
     Integer averageYearlyPoints;
 
     Integer numberOfCompletedSeasons;
+
+    String[] chips;
 
 
     public Integer getCurrentSeasonHighestOverallRank() {
@@ -95,5 +100,13 @@ public class TeamHistory {
 
     public void setAverageYearlyPoints(Integer averageYearlyPoints) {
         this.averageYearlyPoints = averageYearlyPoints;
+    }
+
+    public String[] getChips() {
+        return chips;
+    }
+
+    public void setChips(String[] chips) {
+        this.chips = chips;
     }
 }

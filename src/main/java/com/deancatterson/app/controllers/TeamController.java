@@ -1,5 +1,6 @@
 package com.deancatterson.app.controllers;
 
+import com.deancatterson.app.entity.DetailedTeamInfo;
 import com.deancatterson.app.entity.Team;
 import com.deancatterson.app.entity.TeamHistory;
 import com.deancatterson.app.exception.NoTeamFoundException;
@@ -30,7 +31,15 @@ public class TeamController {
         return new ResponseEntity<>(team, HttpStatus.OK);
     }
 
-    // TODO can refactor to return a DetailedTeamInfo object here, created by pulling data from both the TeamDetails & TeamHistory endpoints
+
+    @GetMapping("/team/detailed/{teamId}")
+    public ResponseEntity<DetailedTeamInfo> getDetailedTeamHistoryById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
+        System.out.println("XXXXX in TeamController");
+        DetailedTeamInfo detailedTeamInfo = teamService.getDetailedTeamInfo(teamId);
+
+        return new ResponseEntity<>(detailedTeamInfo, HttpStatus.OK);
+    }
+
 
     @GetMapping("/team/history/{teamId}")
     public ResponseEntity<TeamHistory> getTeamHistoryById(@PathVariable("teamId") Integer teamId) throws NullTeamIdException, NoTeamFoundException {
