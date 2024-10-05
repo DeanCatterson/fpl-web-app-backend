@@ -122,19 +122,25 @@ public class TeamService {
 
         JSONObject gameweek;
 
-        for (int i = 0; i < currentSeasonArray.length(); i++) {
+        for (int i = currentSeasonArray.length() - 1; i > -1; i--) {
             gameweek = currentSeasonArray.getJSONObject(i);
 
-            if (gameweek.getInt("overall_rank") < currentSeasonHighestOverallRank) {
-                currentSeasonHighestOverallRank = gameweek.getInt("overall_rank");
-            }
+            if (gameweek.isNull("overall_rank") || gameweek.isNull("rank") || gameweek.isNull("points")) {
+                // Skip the gameweek with a null value
+                i--;
+            } else {
 
-            if (gameweek.getInt("rank") < currentSeasonHighestWeeklyRank) {
-                currentSeasonHighestWeeklyRank = gameweek.getInt("rank");
-            }
+                if (gameweek.getInt("overall_rank") < currentSeasonHighestOverallRank) {
+                    currentSeasonHighestOverallRank = gameweek.getInt("overall_rank");
+                }
 
-            if (gameweek.getInt("points") > currentSeasonHighestWeeklyPoints) {
-                currentSeasonHighestWeeklyPoints = gameweek.getInt("points");
+                if (gameweek.getInt("rank") < currentSeasonHighestWeeklyRank) {
+                    currentSeasonHighestWeeklyRank = gameweek.getInt("rank");
+                }
+
+                if (gameweek.getInt("points") > currentSeasonHighestWeeklyPoints) {
+                    currentSeasonHighestWeeklyPoints = gameweek.getInt("points");
+                }
             }
         }
 
@@ -204,8 +210,8 @@ public class TeamService {
             teamHistory.setAverageYearlyRank((int) (rankCounter / numberOfCompletedSeasons));
             teamHistory.setAverageYearlyPoints((int) (pointsCounter / numberOfCompletedSeasons));
         } else {
-            teamHistory.setAverageYearlyRank(-1);
-            teamHistory.setAverageYearlyPoints(-1);
+            teamHistory.setAverageYearlyRank(1);
+            teamHistory.setAverageYearlyPoints(1);
         }
         return teamHistory;
     }
