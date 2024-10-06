@@ -40,10 +40,6 @@ public class TeamService {
         detailedTeamInfo.setTeam(team);
         detailedTeamInfo.setHistory(history);
 
-        System.out.println("YYYYY team: " + team);
-        System.out.println("YYYYY history: " + history);
-        System.out.println("YYYYY detailedTeamInfo: " + detailedTeamInfo);
-
         return detailedTeamInfo;
     }
 
